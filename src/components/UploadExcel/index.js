@@ -16,7 +16,7 @@ const UploadExcel = () => {
     },
     {
       title: "EPC",
-      dataIndex: "id",
+      dataIndex: "epc",
     },
     {
       title: "Name",
@@ -25,7 +25,7 @@ const UploadExcel = () => {
   ];
   function compare(epcValues, listData) {
     // Chuyển đổi listData thành dạng Set (optimized for id lookup)
-    const listDataSet = new Set(listData.map((item) => item.id));
+    const listDataSet = new Set(listData.map((item) => item.epc));
 
     // Tạo 3 mảng để lưu trữ kết quả
     const matchedItems = [];
@@ -36,25 +36,25 @@ const UploadExcel = () => {
     epcValues.forEach((epcValue) => {
       if (listDataSet.has(epcValue)) {
         // Tìm kiếm item khớp trong listData
-        const matchingItem = listData.find((item) => item.id === epcValue);
+        const matchingItem = listData.find((item) => item.epc === epcValue);
         if (matchingItem) {
           // Item trùng khớp, thêm cả id và name
-          matchedItems.push({ id: epcValue, name: matchingItem.name });
+          matchedItems.push({ epc: epcValue, name: matchingItem.name });
         }
       } else {
         // Item chỉ có trong epcValues
-        onlyInEpcValues.push({ id: epcValue, name: "..." }); // Replace "..." with a default value for name if needed
+        onlyInEpcValues.push({ epc: epcValue, name: "..." }); // Replace "..." with a default value for name if needed
       }
     });
 
     // Duyệt qua listData và so sánh với epcValues (unchanged)
     listData.forEach((item) => {
-      if (!epcValues.includes(item.id)) {
+      if (!epcValues.includes(item.epc)) {
         // Item chỉ có trong listData
         onlyInListData.push(item);
       }
     });
-
+    setTableData(onlyInEpcValues);
     setMatchedItemsData(matchedItems);
     setOnlyInListDataData(onlyInListData);
   }
@@ -95,10 +95,14 @@ const UploadExcel = () => {
         <MdCloudUpload color="#1475cf" size={60} />
         <span>Select an Excel file</span>
       </label>
-      <h1 style={{ color: "#333" }}>Dữ liệu đọc được</h1>
+      <h3 style={{ color: "#333" }}>Dữ liệu đọc được</h3>
       <Table columns={columns} dataSource={matchedItemsData} />
-      <h1 style={{ color: "#333" }}>Dữ liệu còn thiếu</h1>
+      <h3 style={{ color: "#333" }}>Dữ liệu còn thiếu</h3>
       <Table columns={columns} dataSource={onlyInListDataData} />
+      <h3 style={{ color: "#333" }}>Dữ liệu không có trong database</h3>
+      {tableData.map((item) => {
+        return <h5 style={{ color: "#333" }}>{item.epc}</h5>;
+      })}{" "}
     </>
   );
 };

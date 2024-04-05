@@ -25,7 +25,7 @@ function Home() {
   const tableData = data.map((item, index) => ({
     key: item.id,
     index: index + 1,
-    epc: item.id,
+    epc: item.epc,
     name: item.name,
   }));
   const onChange = (pagination, filters, sorter, extra) => {
