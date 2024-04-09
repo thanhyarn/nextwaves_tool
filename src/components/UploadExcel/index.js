@@ -19,45 +19,49 @@ const UploadExcel = () => {
       dataIndex: "epc",
     },
     {
+      title: "Count",
+      dataIndex: "count",
+    },
+    {
       title: "Name",
       dataIndex: "name",
     },
   ];
-  function compare(epcValues, listData) {
-    // Chuyển đổi listData thành dạng Set (optimized for id lookup)
+  function compare(newData, listData) {
+    // Chuyển đổi listData thành dạng Set để tối ưu cho việc tìm kiếm theo epc
     const listDataSet = new Set(listData.map((item) => item.epc));
 
     // Tạo 3 mảng để lưu trữ kết quả
     const matchedItems = [];
+    const onlyInNewData = [];
     const onlyInListData = [];
-    const onlyInEpcValues = [];
 
-    // Duyệt qua epcValues và so sánh với listDataSet
-    epcValues.forEach((epcValue) => {
-      if (listDataSet.has(epcValue)) {
-        // Tìm kiếm item khớp trong listData
-        const matchingItem = listData.find((item) => item.epc === epcValue);
+    // Duyệt qua newData và so sánh với listDataSet
+    newData.forEach((dataItem) => {
+      if (listDataSet.has(dataItem.epc)) {
+        // Tìm item khớp trong listData
+        const matchingItem = listData.find((item) => item.epc === dataItem.epc);
         if (matchingItem) {
-          // Item trùng khớp, thêm cả id và name
-          matchedItems.push({ epc: epcValue, name: matchingItem.name });
+          matchedItems.push({ ...dataItem, name: matchingItem.name }); // Kết hợp dataItem và name từ matchingItem
         }
       } else {
-        // Item chỉ có trong epcValues
-        onlyInEpcValues.push({ epc: epcValue, name: "..." }); // Replace "..." with a default value for name if needed
+        onlyInNewData.push(dataItem); // Item chỉ có trong newData
       }
     });
 
-    // Duyệt qua listData và so sánh với epcValues (unchanged)
+    // Duyệt qua listData để tìm các item không có trong newData
     listData.forEach((item) => {
-      if (!epcValues.includes(item.epc)) {
-        // Item chỉ có trong listData
-        onlyInListData.push(item);
+      if (!newData.some((dataItem) => dataItem.epc === item.epc)) {
+        onlyInListData.push(item); // Item chỉ có trong listData
       }
     });
-    setTableData(onlyInEpcValues);
+
+    // Gọi các hàm để cập nhật UI hoặc logic xử lý tiếp theo
+    setTableData(onlyInNewData); // Thay vì onlyInEpcValues, ta sử dụng onlyInNewData
     setMatchedItemsData(matchedItems);
     setOnlyInListDataData(onlyInListData);
   }
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -66,16 +70,19 @@ const UploadExcel = () => {
       const workbook = new ExcelJS.Workbook();
       workbook.xlsx.load(data).then((workbook) => {
         const worksheet = workbook.getWorksheet(1); // Lấy sheet đầu tiên
-        const epcValues = [];
+        const dataList = []; // Mảng để lưu các đối tượng { epc, count }
         worksheet.eachRow((row, rowNumber) => {
           if (rowNumber === 1) {
             // Bỏ qua header
             return;
           }
           const epc = row.getCell(2).value; // Lấy giá trị cột EPC
-          epcValues.push(epc);
+          const count = row.getCell(3).value; // Lấy giá trị cột Count
+          dataList.push({ epc, count }); // Thêm đối tượng vào mảng
         });
-        compare(epcValues, JSON.parse(localStorage.getItem("listData")) || []);
+        compare(dataList, JSON.parse(localStorage.getItem("listData")) || []);
+        // // Bạn có thể cập nhật localStorage ở đây nếu muốn
+        // localStorage.setItem("listData", JSON.stringify(dataList));
       });
     };
     reader.readAsArrayBuffer(file);
