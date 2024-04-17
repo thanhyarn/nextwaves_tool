@@ -39,11 +39,11 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
             <BsFillGrid3X3GapFill className="icon" /> Compare
           </a>
         </li>
-        {/* <li className="sidebar-list-item">
-          <a href="">
-            <BsPeopleFill className="icon" /> Kiểm chứng file
+        <li className="sidebar-list-item">
+          <a href="merge">
+            <BsPeopleFill className="icon" /> Merge
           </a>
-        </li> */}
+        </li>
       </ul>
     </aside>
   );
