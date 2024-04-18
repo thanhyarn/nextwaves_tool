@@ -41,57 +41,30 @@ const MergeExcel = () => {
   ];
 
   const handleMerge = (list1, list2, referenceData) => {
-    let mergedList = [];
-    let onlyInList1 = [];
-    let onlyInList2 = [];
-    let notInEither = [];
+    // Initialize empty arrays to store merged and missing data
+    const mergedList = [];
+    const missingDataList = [];
 
-    // Tạo một đối tượng từ listData để dễ dàng truy cập thông tin bằng EPC
-    let dataObj = {};
-    referenceData.forEach((item) => {
-      dataObj[item.epc] = item.name;
-    });
+    // Create a set of EPCs from referenceData for efficient lookup
+    const referenceEPCSet = new Set(referenceData.map(({ epc }) => epc));
 
-    // Merge dữ liệu và lấy tên từ listData
-    list1.forEach((item) => {
-      if (item.epc in dataObj) {
-        if (!mergedList.some((elem) => elem.epc === item.epc)) {
-          mergedList.push({ epc: item.epc, name: dataObj[item.epc] });
-        } else {
-          onlyInList1.push(item);
-        }
+    // Iterate through referenceData
+    referenceData.forEach(({ epc, name }) => {
+      // Check if EPC exists in list1 or list2
+      const isInList1 = list1.some((item) => item.epc === epc);
+      const isInList2 = list2.some((item) => item.epc === epc);
+
+      // If EPC is found in either list, add it to mergedList with name
+      if (isInList1 || isInList2) {
+        mergedList.push({ epc, name });
       } else {
-        onlyInList1.push(item);
+        // If EPC is not found in either list, add it to missingDataList
+        missingDataList.push({ epc, name });
       }
     });
 
-    list2.forEach((item) => {
-      if (item.epc in dataObj) {
-        if (!mergedList.some((elem) => elem.epc === item.epc)) {
-          mergedList.push({ epc: item.epc, name: dataObj[item.epc] });
-        } else {
-          onlyInList2.push(item);
-        }
-      } else {
-        onlyInList2.push(item);
-      }
-    });
-
-    // Tìm các phần tử không có trong cả hai danh sách
-    for (let epc in dataObj) {
-      if (
-        !list1.some((item) => item.epc === epc) &&
-        !list2.some((item) => item.epc === epc)
-      ) {
-        notInEither.push({ epc: epc, name: dataObj[epc] });
-      }
-    }
-
-    setMergedList(mergedList);
-    setOnlyInList1(onlyInList1);
-    setOnlyInList2(onlyInList2);
-    setNotInEither(notInEither);
-    // return [mergedList, onlyInList1, onlyInList2, notInEither];
+    // Return the merged and missing data arrays
+    return { mergedList, missingDataList };
   };
 
   const handleFileChangeExcel1 = (event) => {
