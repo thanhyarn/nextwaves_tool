@@ -8,9 +8,7 @@ const MergeExcel = () => {
   const [listExcel2, setListExcel2] = useState([]);
 
   const [mergedList, setMergedList] = useState([]);
-  const [onlyInList1, setOnlyInList1] = useState([]);
-  const [onlyInList2, setOnlyInList2] = useState([]);
-  const [notInEither, setNotInEither] = useState([]);
+  const [missingDataList, setMissingDataList] = useState([]);
 
   const columns = [
     {
@@ -36,7 +34,7 @@ const MergeExcel = () => {
     },
     {
       title: "Name",
-      name: "name",
+      dataIndex: "name",
     },
   ];
 
@@ -64,7 +62,13 @@ const MergeExcel = () => {
     });
 
     // Return the merged and missing data arrays
-    return { mergedList, missingDataList };
+    // return { mergedList, missingDataList };
+
+    console.log(mergedList);
+    console.log(missingDataList);
+
+    setMergedList(mergedList);
+    setMissingDataList(missingDataList);
   };
 
   const handleFileChangeExcel1 = (event) => {
@@ -215,17 +219,15 @@ const MergeExcel = () => {
             />
           </Space>
         </Space>
-        <h3 style={{ color: "#333" }}>Dữ liệu trùng khớp</h3>
+        <h3 style={{ color: "#333" }}>
+          Merged List : {mergedList.length || 0}
+        </h3>
         <Table columns={columnsMerge} dataSource={mergedList} />
 
-        <h3 style={{ color: "#333" }}>Dữ liệu chỉ có ở Data1</h3>
-        <Table columns={columnsMerge} dataSource={onlyInList1} />
-
-        <h3 style={{ color: "#333" }}>Dữ liệu chỉ có ở Data2</h3>
-        <Table columns={columnsMerge} dataSource={onlyInList2} />
-
-        <h3 style={{ color: "#333" }}>Dữ liệu còn thiếu của cả 2</h3>
-        <Table columns={columnsMerge} dataSource={notInEither} />
+        <h3 style={{ color: "#333" }}>
+          Missing Data List : {missingDataList.length || 0}
+        </h3>
+        <Table columns={columnsMerge} dataSource={missingDataList} />
       </Space>
     </>
   );
