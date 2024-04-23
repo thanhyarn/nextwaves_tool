@@ -53,8 +53,6 @@ const Uploader = ({ setData }) => {
         <MdCloudUpload color="#1475cf" size={60} />
         <span>Select a JSON file</span>
       </label>
-
-   
     </>
   );
 };

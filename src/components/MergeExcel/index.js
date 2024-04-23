@@ -295,8 +295,7 @@ const MergeExcel = () => {
         <h2 style={{ color: "#333" }}>
           {" "}
           {mergedList.length > 0 &&
-            ((mergedList.length / listData.length) * 100).toFixed(2)}{" "}
-          %
+            ((mergedList.length / listData.length) * 100).toFixed(2) + "%"}{" "}
         </h2>
         <Table columns={columnsMerge} dataSource={mergedList} />
 
@@ -305,8 +304,8 @@ const MergeExcel = () => {
         </h3>
         <h2 style={{ color: "#333" }}>
           {missingDataList.length > 0 &&
-            ((missingDataList.length / listData.length) * 100).toFixed(2)}{" "}
-          %
+            ((missingDataList.length / listData.length) * 100).toFixed(2) +
+              "%"}{" "}
         </h2>
         <Table columns={columnsMerge} dataSource={missingDataList} />
       </Space>
